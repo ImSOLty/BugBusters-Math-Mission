@@ -1,0 +1,18 @@
+type: edu
+files:
+- name: test/ExceptionsTests.java
+  visible: false
+- name: test/Consts.java
+  visible: false
+- name: test/BehaviourTests.java
+  visible: false
+- name: src/Memory.java
+  visible: true
+- name: src/BooleanMemorize.java
+  visible: true
+- name: src/NumberMemorize.java
+  visible: true
+- name: src/WordMemorize.java
+  visible: true
+- name: src/FileProcessor.java
+  visible: true

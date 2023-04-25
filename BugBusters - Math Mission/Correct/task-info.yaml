@@ -1,0 +1,16 @@
+type: edu
+files:
+- name: src/mathmission/Memorize.java
+  visible: true
+- name: test/MemoryTests.java
+  visible: false
+- name: src/mathmission/Memory.java
+  visible: true
+- name: test/BehaviourTests.java
+  visible: false
+- name: src/mathmission/SpecifiedMemorize.java
+  visible: true
+- name: test/Consts.java
+  visible: false
+- name: src/mathmission/FileProcessor.java
+  visible: true
