@@ -1,30 +1,29 @@
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.util.*;
-import java.util.regex.Pattern;
 
-public class WordMemorize {
-  static ArrayList<String> list = new ArrayList<>();
+public class BooleanMemorize {
+  static ArrayList<Boolean> list = new ArrayList<>();
   boolean finished = false;
   static List<Object> args = new ArrayList<>();
   static Map<String, Class<?>[]> commands;
 
-  public WordMemorize() {
+  public BooleanMemorize() {
     list.clear();
     commands = new HashMap<>();
     commands.put("/help", new Class<?>[]{});
     commands.put("/menu", new Class<?>[]{});
-    commands.put("/add", new Class<?>[]{String.class});
+    commands.put("/add", new Class<?>[]{Boolean.class});
     commands.put("/remove", new Class<?>[]{int.class});
-    commands.put("/replace", new Class<?>[]{int.class, String.class});
-    commands.put("/replaceAll", new Class<?>[]{String.class, String.class});
-    commands.put("/index", new Class<?>[]{String.class});
+    commands.put("/replace", new Class<?>[]{int.class, Boolean.class});
+    commands.put("/replaceAll", new Class<?>[]{Boolean.class, Boolean.class});
+    commands.put("/index", new Class<?>[]{Boolean.class});
     commands.put("/sort", new Class<?>[]{String.class});
     commands.put("/frequency", new Class<?>[]{});
     commands.put("/print", new Class<?>[]{int.class});
     commands.put("/printAll", new Class<?>[]{String.class});
     commands.put("/getRandom", new Class<?>[]{});
-    commands.put("/count", new Class<?>[]{String.class});
+    commands.put("/count", new Class<?>[]{Boolean.class});
     commands.put("/size", new Class<?>[]{});
     commands.put("/equals", new Class<?>[]{int.class, int.class});
     commands.put("/readFile", new Class<?>[]{String.class});
@@ -33,14 +32,13 @@ public class WordMemorize {
     commands.put("/compare", new Class<?>[]{int.class, int.class});
     commands.put("/mirror", new Class<?>[]{});
     commands.put("/unique", new Class<?>[]{});
-    commands.put("/concat", new Class<?>[]{int.class, int.class});
-    commands.put("/swapCase", new Class<?>[]{int.class});
-    commands.put("/upper", new Class<?>[]{int.class});
-    commands.put("/lower", new Class<?>[]{int.class});
-    commands.put("/reverse", new Class<?>[]{int.class});
-    commands.put("/length", new Class<?>[]{int.class});
-    commands.put("/join", new Class<?>[]{String.class});
-    commands.put("/regex", new Class<?>[]{String.class});
+    commands.put("/flip", new Class<?>[]{int.class});
+    commands.put("/negateAll", new Class<?>[]{});
+    commands.put("/and", new Class<?>[]{int.class, int.class});
+    commands.put("/or", new Class<?>[]{int.class, int.class});
+    commands.put("/logShift", new Class<?>[]{int.class});
+    commands.put("/convertTo", new Class<?>[]{String.class});
+    commands.put("/morse", new Class<?>[]{});
   }
 
   void Run() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
@@ -53,10 +51,13 @@ public class WordMemorize {
       for (int i = 1; i < data.length; i++) {
         if (commands.get(data[0])[i - 1].equals(int.class))
           args.add(Integer.parseInt(data[i]));
-        else {
+        else if (commands.get(data[0])[i - 1].equals(Boolean.class)) {
+          args.add(data[i].equals("true"));
+        } else {
           args.add(data[i]);
         }
       }
+
       this.getClass().getDeclaredMethod(data[0].substring(1), commands.get(data[0])).invoke(this, args.toArray());
     }
   }
@@ -94,17 +95,15 @@ public class WordMemorize {
                     "/writeFile [<string> FILENAME] - Export the list data to the specified file");
     System.out.println(
             "===================================================================================================================\n" +
-                    "Word-specific commands:\n" +
+                    "Boolean-specific commands:\n" +
                     "===================================================================================================================\n" +
-                    "/concat [<int> INDEX1] [<int> INDEX2] Concatenate two specified strings\n" +
-                    "/swapCase [<int> INDEX] Output swapped case version of the specified string\n" +
-                    "/upper [<int> INDEX] Output uppercase version of the specified string\n" +
-                    "/lower [<int> INDEX] Output lowercase version of the specified string\n" +
-                    "/reverse [<int> INDEX] Output reversed version of the specified string\n" +
-                    "/length [<int> INDEX] Get the length of the specified string\n" +
-                    "/join [<string> DELIMITER] Join all the strings with the specified delimiter\n" +
-                    "/regex [<string> PATTERN] Search for all elements that match the specified regular expression " +
-                    "pattern\n" +
+                    "/flip [<int> INDEX] - Flip the specified boolean\n" +
+                    "/negateAll - Negate all the booleans in memory\n" +
+                    "/and [<int> INDEX1] [<int> INDEX2] - Calculate the bitwise AND of the two specified elements\n" +
+                    "/or [<int> INDEX1] [<int> INDEX2] - Calculate the bitwise OR of the two specified elements\n" +
+                    "/logShift [<int> NUM] - Perform a logical shift of elements in memory by the specified amount\n" +
+                    "/convertTo [string/number] - Convert the boolean(bit) sequence in memory to the specified type\n" +
+                    "/morse - Convert the boolean(bit) sequence to Morse code\n" +
                     "===================================================================================================================");
   }
 
@@ -112,7 +111,7 @@ public class WordMemorize {
     this.finished = true;
   }
 
-  void add(String element) {
+  void add(Boolean element) {
     list.add(element);
     System.out.println("Element " + element + " added");
   }
@@ -122,12 +121,12 @@ public class WordMemorize {
     System.out.println("Element on " + index + " position removed");
   }
 
-  void replace(int index, String element) {
+  void replace(int index, Boolean element) {
     list.set(index, element);
     System.out.println("Element on " + index + " position replaced with " + element);
   }
 
-  void replaceAll(String from, String to) {
+  void replaceAll(Boolean from, Boolean to) {
     for (int i = 0; i < list.size(); i++) {
       if (list.get(i).equals(from)) {
         list.set(i, to);
@@ -136,17 +135,16 @@ public class WordMemorize {
     System.out.println("Each " + from + " element replaced with " + to);
   }
 
-  void index(String value) {
-    int i = list.indexOf(value);
-    System.out.println("First occurrence of " + value + " is on " + i + " position");
+  void index(Boolean value) {
+    System.out.println("First occurrence of " + value + " is on " + list.indexOf(value) + " position");
   }
 
   void sort(String way) {
     for (int i = 0; i < list.size(); i++) {
       for (int j = i; j < list.size(); j++) {
-        if (list.get(i).compareTo(list.get(j)) > 0 && way.equals("ascending") || list.get(i).compareTo(list.get(j)) < 0 && way.equals(
+        if (list.get(i) && !list.get(j) && way.equals("ascending") || list.get(i) && !list.get(j) && way.equals(
                 "descending")) {
-          String temp = list.get(i);
+          Boolean temp = list.get(i);
           list.set(i, list.get(j));
           list.set(j, temp);
         }
@@ -156,17 +154,17 @@ public class WordMemorize {
   }
 
   void frequency() {
-    Map<String, Long> counts = new HashMap<>();
-    for (String i : list) {
-      if (counts.get(i) == null) {
-        counts.put(i, 1L);
+    Map<Boolean, Long> counts = new HashMap<>();
+    for (Boolean b : list) {
+      if (counts.get(b) == null) {
+        counts.put(b, 1L);
       } else {
-        counts.put(i, counts.get(i) + 1);
+        counts.put(b, counts.get(b) + 1);
       }
     }
 
     System.out.println("Frequency:");
-    for (Map.Entry<String, Long> entry : counts.entrySet()) {
+    for (Map.Entry<Boolean, Long> entry : counts.entrySet()) {
       System.out.println(entry.getKey() + ": " + entry.getValue());
     }
   }
@@ -177,7 +175,7 @@ public class WordMemorize {
 
   void getRandom() {
     Random random = new Random();
-    System.out.println("Random element: " + list.get(random.nextInt(list.size())));
+    System.out.println("Random element: " + list.get(random.nextInt(1)));
   }
 
   void printAll(String type) {
@@ -188,7 +186,7 @@ public class WordMemorize {
         break;
       case "lineByLine":
         System.out.println("List of elements:\n");
-        for (String i : list) {
+        for (Boolean i : list) {
           System.out.println(i);
         }
         break;
@@ -204,10 +202,10 @@ public class WordMemorize {
     }
   }
 
-  void count(String value) {
+  void count(Boolean value) {
     int amount = 0;
-    for (String i : list) {
-      if (i.equals(value)) {
+    for (Boolean i : list) {
+      if (i == value) {
         amount++;
       }
     }
@@ -225,17 +223,16 @@ public class WordMemorize {
   }
 
   void readFile(String path) throws IOException {
-    int before = list.size();
-    FileReaderWords readerThread = new FileReaderWords();
-    ArrayList<String> list2 = readerThread.read(path);
-    for (String i : list2) {
+    FileReaderBoolean readerThread = new FileReaderBoolean();
+    ArrayList<Boolean> list2 = readerThread.read(path);
+    for (Boolean i : list2) {
       list.add(i);
     }
-    System.out.println("Data imported: " + (list.size() - before));
+    System.out.println("Data imported: " + (list.size()));
   }
 
   void writeFile(String path) throws IOException {
-    FileWriterWords writer = new FileWriterWords();
+    FileWriterBoolean writer = new FileWriterBoolean();
     writer.write(path, list);
     System.out.println("Data exported: " + list.size());
   }
@@ -246,9 +243,9 @@ public class WordMemorize {
   }
 
   void compare(int i, int j) {
-    if (list.get(i).compareTo(list.get(j)) > 0) {
+    if (list.get(i) && !list.get(j)) {
       System.out.println("Result: " + list.get(i) + " > " + list.get(j));
-    } else if (list.get(i).compareTo(list.get(j)) < 0) {
+    } else if (!list.get(i) && list.get(j)) {
       System.out.println("Result: " + list.get(i) + " < " + list.get(j));
     } else {
       System.out.println("Result: " + list.get(i) + " = " + list.get(j));
@@ -256,78 +253,111 @@ public class WordMemorize {
   }
 
   void mirror() {
-    ArrayList<String> list2 = new ArrayList<>();
+    ArrayList<Boolean> list2 = new ArrayList<>();
     for (int i = list.size() - 1; i >= 0; i--) {
       list2.add(list.get(i));
     }
-    list = list2;
     System.out.println("Data reversed");
   }
 
   void unique() {
-    Map<String, Long> counts = new HashMap<>();
-    for (String i : list) {
+    Map<Boolean, Long> counts = new HashMap<>();
+    for (Boolean i : list) {
       if (counts.get(i) == null) {
         counts.put(i, 1L);
       } else {
         counts.put(i, counts.get(i) + 1);
       }
     }
-    ArrayList<String> list2 = new ArrayList<>();
-    for (Map.Entry<String, Long> entry : counts.entrySet()) {
+    ArrayList<Boolean> list2 = new ArrayList<>();
+    for (Map.Entry<Boolean, Long> entry : counts.entrySet()) {
       list2.add(entry.getKey());
     }
     System.out.println("Unique values: " + Arrays.toString(list2.toArray()));
   }
 
-  void concat(int i, int j) {
-    System.out.println("Concatenated string: " + list.get(i) + list.get(j));
+  void flip(int index) {
+    list.set(index, !list.get(0));
+    System.out.println("Element on " + index + " position flipped");
   }
 
-  void swapCase(int i) {
-    System.out.printf("\"%s\" string with swapped case: ", list.get(i));
-    for (char c : (list.get(i)).toCharArray()) {
-      if (Character.isUpperCase(c)) {
-        System.out.print(Character.toLowerCase(c));
-      } else if (Character.isLowerCase(c)) {
-        System.out.print(Character.toUpperCase(c));
+  void negateAll() {
+    list.replaceAll(e -> !e);
+    System.out.println("All elements negated");
+  }
+
+  void and(int i, int j) {
+    boolean a = list.get(i), b = list.get(j);
+    boolean res = a && a;
+    System.out.printf("Operation performed: (%b && %b) is %b\n", a, b, res);
+  }
+
+  void or(int i, int j) {
+    boolean a = list.get(i), b = list.get(j);
+    boolean res = b || b;
+    System.out.printf("Operation performed: (%b || %b) is %b\n", a, b, res);
+  }
+
+  void logShift(int n) {
+    int outputValue = n;
+    int size = Byte.SIZE;
+    if (size == 0) {
+      return;
+    }
+    n %= size;
+    if (n < 0) {
+      n += size;
+    }
+    for (int i = 0; i < n; i++) {
+      Boolean last = list.get(size - 1);
+      for (int j = size - 1; j > 0; j--) {
+        list.set(j, list.get(j - 1));
+      }
+      list.set(0, last);
+    }
+    System.out.println("Elements shifted by " + outputValue);
+  }
+
+  void convertTo(String type) {
+    StringBuilder binary = new StringBuilder();
+    for (boolean b : list) {
+      if (b) {
+        binary.append("1");
       } else {
-        System.out.print(c);
+        binary.append("0");
       }
     }
-    System.out.println();
+    switch (type.toLowerCase()) {
+      case "number":
+        System.out.println("Converted: " + Long.parseLong(binary.toString(), 2));
+        break;
+      case "string":
+        int byteSize = list.size();
+        StringBuilder sb = new StringBuilder();
+        if (binary.length() % byteSize != 0) {
+          System.out.println("Amount of elements is not divisible by 8, so the last " + binary.length() % byteSize + " of " +
+                  "them will be ignored");
+        }
+        for (int i = 0; i < binary.length(); i += byteSize) {
+          String segment = binary.substring(i, Math.min(i + byteSize, binary.length()));
+          int asciiValue = Integer.parseInt(segment, 2);
+          sb.append((char) asciiValue);
+        }
+        String asciiSequence = sb.toString();
+        System.out.println("Converted: " + asciiSequence);
+        break;
+    }
   }
 
-  void upper(int i) {
-    System.out.printf("Uppercase \"%s\" string: %s\n", list.get(i), (list.get(i)).toUpperCase());
-  }
-
-  void lower(int i) {
-    System.out.printf("Lowercase \"%s\" string: %s\n", list.get(i), (list.get(i)).toLowerCase());
-  }
-
-  void reverse(int i) {
-    System.out.printf("Reversed \"%s\" string: %s\n", list.get(i), new StringBuilder(list.get(i)).reverse());
-  }
-
-  void length(int i) {
-    System.out.printf("Length of \"%s\" string: %d\n", list.get(i), (list.get(i)).length());
-  }
-
-  void join(String delimiter) {
-    System.out.printf("Joined string: %s\n", String.join(delimiter, list));
-  }
-
-  void regex(String regex) {
-    List<String> matchingElements = new ArrayList<>();
-    Pattern pattern;
-    pattern = Pattern.compile(regex);
-    for (String element : list) {
-      if (pattern.matcher(element).matches()) {
-        matchingElements.add(element);
+  void morse() {
+    StringBuilder morseCode = new StringBuilder("Morse code: ");
+    for (boolean b : list) {
+      if (b) {
+        morseCode.append(".");
+      } else {
+        morseCode.append("_");
       }
     }
-    System.out.println("Strings that match provided regex:");
-    System.out.println(Arrays.toString(matchingElements.toArray()));
+    System.out.println(morseCode);
   }
 }

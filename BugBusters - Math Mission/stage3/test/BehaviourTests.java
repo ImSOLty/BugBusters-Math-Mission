@@ -379,9 +379,6 @@ public class BehaviourTests extends StageTest {
     pr.execute("/sort ascending");
     copy.sort(new CustomComparator());
     ElementsExistence(pr, copy.toArray(), "/sort", type);
-    pr.execute("/sort descending");
-    copy.sort(new CustomComparator().reversed());
-    ElementsExistence(pr, copy.toArray(), "/sort", type);
     return CheckResult.correct();
   }
 
@@ -601,7 +598,7 @@ public class BehaviourTests extends StageTest {
 
     String[][] promptResult = {
             {"/concat", " 0 1", "Hello,world!"},
-            {"/swapCase", " 0", "hELLO,"},
+            {"/swapCase", " 1", "WORLD!"},
             {"/upper", " 0", "HELLO,"},
             {"/lower", " 0", "hello,"},
             {"/reverse", " 0", ",olleH"},

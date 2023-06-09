@@ -1,8 +1,9 @@
+import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
 import java.util.*;
 
 public class NumberMemorize {
   static ArrayList<Integer> list = new ArrayList<>();
-  String command = "";
   boolean finished = false;
   static List<Object> args = new ArrayList<>();
   static Map<String, Class<?>[]> commands;
@@ -41,39 +42,21 @@ public class NumberMemorize {
     commands.put("/average", new Class<?>[]{});
   }
 
-  void Run() {
+  void Run() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
     Scanner scanner = new Scanner(System.in);
     while (!finished) {
-      command = "";
       args.clear();
-      try {
-        System.out.println("Perform action:");
-        String[] data = scanner.nextLine().split(" ");
-        command = data[0];
+      System.out.println("Perform action:");
+      String[] data = scanner.nextLine().split(" ");
 
-        if (!commands.containsKey(command)) {
-          ErrorWithContinue("No such command");
+      for (int i = 1; i < data.length; i++) {
+        if (commands.get(data[0])[i - 1].equals(int.class))
+          args.add(Integer.parseInt(data[i]));
+        else {
+          args.add(data[i]);
         }
-        if (commands.get(command).length != data.length - 1) {
-          ErrorWithContinue("Incorrect amount of arguments");
-        }
-
-        for (int i = 1; i < data.length; i++) {
-          try {
-            if (commands.get(command)[i - 1].equals(int.class))
-              args.add(Integer.parseInt(data[i]));
-            else {
-              args.add(data[i]);
-            }
-          } catch (Exception e) {
-            ErrorWithContinue("Some arguments can't be parsed");
-          }
-        }
-        this.getClass().getDeclaredMethod(command.substring(1), commands.get(command)).invoke(this, args.toArray());
-      } catch (ContinueException ignored) {
-      } catch (Exception e) {
-        e.printStackTrace();
       }
+      this.getClass().getDeclaredMethod(data[0].substring(1), commands.get(data[0])).invoke(this, args.toArray());
     }
   }
 
@@ -135,13 +118,11 @@ public class NumberMemorize {
   }
 
   void remove(int index) {
-    if (CheckIndexOutOfBounds(index)) return;
     list.remove(index);
     System.out.println("Element on " + index + " position removed");
   }
 
   void replace(int index, int element) {
-    if (CheckIndexOutOfBounds(index)) return;
     list.set(index, element);
     System.out.println("Element on " + index + " position replaced with " + element);
   }
@@ -157,21 +138,13 @@ public class NumberMemorize {
 
   void index(int value) {
     int i = list.indexOf(value);
-    if (i == -1) {
-      System.out.println("There is no such element memorized");
-      return;
-    }
     System.out.println("First occurrence of " + value + " is on " + i + " position");
   }
 
   void sort(String way) {
-    if (!way.equals("ascending") && !way.equals("descending")) {
-      Error("Incorrect argument, possible arguments: ascending, descending");
-      return;
-    }
     for (int i = 0; i < list.size(); i++) {
       for (int j = i; j < list.size(); j++) {
-        if (list.get(i) > list.get(j) && way.equals("ascending") || list.get(i) < list.get(j) && way.equals(
+        if (list.get(i) > list.get(j) && way.equals("ascending") || list.get(i) > list.get(j) && way.equals(
                 "descending")) {
           int temp = list.get(i);
           list.set(i, list.get(j));
@@ -183,10 +156,6 @@ public class NumberMemorize {
   }
 
   void frequency() {
-    if (list.size() == 0) {
-      System.out.println("There is no elements memorized");
-      return;
-    }
     Map<Integer, Long> counts = new HashMap<>();
     for (int i : list) {
       if (counts.get(i) == null) {
@@ -203,17 +172,12 @@ public class NumberMemorize {
   }
 
   void print(int index) {
-    if (CheckIndexOutOfBounds(index)) return;
     System.out.println("Element on " + index + " position is " + list.get(index));
   }
 
   void getRandom() {
-    if(list.size()==0){
-      System.out.println("There is no elements memorized");
-      return;
-    }
     Random random = new Random();
-    System.out.println("Random element: " + list.get(random.nextInt(list.size())));
+    System.out.println("Random element: " + list.get(random.nextInt(1)));
   }
 
   void printAll(String type) {
@@ -237,9 +201,6 @@ public class NumberMemorize {
           System.out.print(list.get(list.size() - 1));
         System.out.println();
         break;
-      default:
-        Error("Incorrect argument, possible arguments: asList, lineByLine, oneLine");
-        break;
     }
   }
 
@@ -258,23 +219,21 @@ public class NumberMemorize {
   }
 
   void equals(int i, int j) {
-    if (CheckIndexOutOfBounds(i) || CheckIndexOutOfBounds(j)) return;
     boolean res = list.get(i).equals(list.get(j));
     System.out.printf("%d and %d elements are%s equal: %s\n",
             i, j, res ? "" : " not", list.get(i) + (res ? " = " : " != ") + list.get(j));
   }
 
-  void readFile(String path) {
-    int before = list.size();
+  void readFile(String path) throws IOException {
     FileReaderInteger readerThread = new FileReaderInteger();
     ArrayList<Integer> list2 = readerThread.read(path);
     for (int i : list2) {
       list.add(i);
     }
-    System.out.println("Data imported: " + (list.size() - before));
+    System.out.println("Data imported: " + (list.size()));
   }
 
-  void writeFile(String path) {
+  void writeFile(String path) throws IOException {
     FileWriterInteger writer = new FileWriterInteger();
     writer.write(path, list);
     System.out.println("Data exported: " + list.size());
@@ -286,7 +245,6 @@ public class NumberMemorize {
   }
 
   void compare(int i, int j) {
-    if (CheckIndexOutOfBounds(i) || CheckIndexOutOfBounds(j)) return;
     if (list.get(i) > list.get(j)) {
       System.out.println("Result: " + list.get(i) + " > " + list.get(j));
     } else if (list.get(i) < list.get(j)) {
@@ -301,7 +259,6 @@ public class NumberMemorize {
     for (int i = list.size() - 1; i >= 0; i--) {
       list2.add(list.get(i));
     }
-    list = list2;
     System.out.println("Data reversed");
   }
 
@@ -321,68 +278,42 @@ public class NumberMemorize {
     System.out.println("Unique values: " + Arrays.toString(list2.toArray()));
   }
 
-  void ErrorWithContinue(String info) throws ContinueException {
-    System.out.printf("Error while performing command \"%s\"!\nDescription: %s!\n", command, info);
-    throw new ContinueException("");
-  }
-
-  void Error(String info) {
-    System.out.printf("Error while performing command \"%s\"!\nDescription: %s!\n", command, info);
-  }
-
-  boolean CheckIndexOutOfBounds(int i) {
-    if (i < 0 || i >= list.size()) {
-      Error("Index out of bounds");
-      return true;
-    }
-    return false;
-  }
-
   void sum(int i, int j) {
-    if (CheckIndexOutOfBounds(i) || CheckIndexOutOfBounds(j)) return;
     int a = list.get(i), b = list.get(j);
     int res = a + b;
     System.out.printf("Calculation performed: %d + %d = %d\n", a, b, res);
   }
 
   void subtract(int i, int j) {
-    if (CheckIndexOutOfBounds(i) || CheckIndexOutOfBounds(j)) return;
     int a = list.get(i), b = list.get(j);
     int res = a - b;
     System.out.printf("Calculation performed: %d - %d = %d\n", a, b, res);
   }
 
   void multiply(int i, int j) {
-    if (CheckIndexOutOfBounds(i) || CheckIndexOutOfBounds(j)) return;
     int a = list.get(i), b = list.get(j);
     int res = a * b;
     System.out.printf("Calculation performed: %d * %d = %d\n", a, b, res);
   }
 
   void divide(int i, int j) {
-    if (CheckIndexOutOfBounds(i) || CheckIndexOutOfBounds(j)) return;
     int a = list.get(i), b = list.get(j);
-    if (b == 0) {
-      Error("Division by zero");
-      return;
-    }
     float res = (float) a / (float) b;
     System.out.printf("Calculation performed: %d / %d = %f\n", a, b, res);
   }
 
   void pow(int i, int j) {
-    if (CheckIndexOutOfBounds(i) || CheckIndexOutOfBounds(j)) return;
     int a = list.get(i), b = list.get(j);
     long res = (long) Math.pow(a, b);
     System.out.printf("Calculation performed: %d ^ %d = %d\n", a, b, res);
   }
 
   void factorial(int index) {
-    if (CheckIndexOutOfBounds(index)) return;
     long res = 1;
-    for (int i = 2; i <= list.get(index); i++) {
-      res = res * i;
-    }
+    int i=2;
+    do{
+      res = res * (i++);
+    }while(i <= list.get(index));
     System.out.printf("Calculation performed: %d! = %d\n", list.get(index), res);
   }
 
@@ -399,6 +330,6 @@ public class NumberMemorize {
     for (int i : list) {
       sum += i;
     }
-    System.out.println("Average of all elements: " + sum / list.size());
+    System.out.println("Average of all elements: " + sum / 2);
   }
 }

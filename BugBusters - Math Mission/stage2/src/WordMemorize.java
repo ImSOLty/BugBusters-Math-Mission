@@ -1,28 +1,30 @@
+import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
 import java.util.*;
+import java.util.regex.Pattern;
 
-public class NumberMemorize {
-  static ArrayList<Integer> list = new ArrayList<>();
-  String command = "";
+public class WordMemorize {
+  static ArrayList<String> list = new ArrayList<>();
   boolean finished = false;
   static List<Object> args = new ArrayList<>();
   static Map<String, Class<?>[]> commands;
 
-  public NumberMemorize() {
+  public WordMemorize() {
     list.clear();
     commands = new HashMap<>();
     commands.put("/help", new Class<?>[]{});
     commands.put("/menu", new Class<?>[]{});
-    commands.put("/add", new Class<?>[]{int.class});
+    commands.put("/add", new Class<?>[]{String.class});
     commands.put("/remove", new Class<?>[]{int.class});
-    commands.put("/replace", new Class<?>[]{int.class, int.class});
-    commands.put("/replaceAll", new Class<?>[]{int.class, int.class});
-    commands.put("/index", new Class<?>[]{int.class});
+    commands.put("/replace", new Class<?>[]{int.class, String.class});
+    commands.put("/replaceAll", new Class<?>[]{String.class, String.class});
+    commands.put("/index", new Class<?>[]{String.class});
     commands.put("/sort", new Class<?>[]{String.class});
     commands.put("/frequency", new Class<?>[]{});
     commands.put("/print", new Class<?>[]{int.class});
     commands.put("/printAll", new Class<?>[]{String.class});
     commands.put("/getRandom", new Class<?>[]{});
-    commands.put("/count", new Class<?>[]{int.class});
+    commands.put("/count", new Class<?>[]{String.class});
     commands.put("/size", new Class<?>[]{});
     commands.put("/equals", new Class<?>[]{int.class, int.class});
     commands.put("/readFile", new Class<?>[]{String.class});
@@ -31,49 +33,31 @@ public class NumberMemorize {
     commands.put("/compare", new Class<?>[]{int.class, int.class});
     commands.put("/mirror", new Class<?>[]{});
     commands.put("/unique", new Class<?>[]{});
-    commands.put("/sum", new Class<?>[]{int.class, int.class});
-    commands.put("/subtract", new Class<?>[]{int.class, int.class});
-    commands.put("/multiply", new Class<?>[]{int.class, int.class});
-    commands.put("/divide", new Class<?>[]{int.class, int.class});
-    commands.put("/pow", new Class<?>[]{int.class, int.class});
-    commands.put("/factorial", new Class<?>[]{int.class});
-    commands.put("/sumAll", new Class<?>[]{});
-    commands.put("/average", new Class<?>[]{});
+    commands.put("/concat", new Class<?>[]{int.class, int.class});
+    commands.put("/swapCase", new Class<?>[]{int.class});
+    commands.put("/upper", new Class<?>[]{int.class});
+    commands.put("/lower", new Class<?>[]{int.class});
+    commands.put("/reverse", new Class<?>[]{int.class});
+    commands.put("/length", new Class<?>[]{int.class});
+    commands.put("/join", new Class<?>[]{String.class});
+    commands.put("/regex", new Class<?>[]{String.class});
   }
 
-  void Run() {
+  void Run() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
     Scanner scanner = new Scanner(System.in);
     while (!finished) {
-      command = "";
       args.clear();
-      try {
-        System.out.println("Perform action:");
-        String[] data = scanner.nextLine().split(" ");
-        command = data[0];
+      System.out.println("Perform action:");
+      String[] data = scanner.nextLine().split(" ");
 
-        if (!commands.containsKey(command)) {
-          ErrorWithContinue("No such command");
+      for (int i = 1; i < data.length; i++) {
+        if (commands.get(data[0])[i - 1].equals(int.class))
+          args.add(Integer.parseInt(data[i]));
+        else {
+          args.add(data[i]);
         }
-        if (commands.get(command).length != data.length - 1) {
-          ErrorWithContinue("Incorrect amount of arguments");
-        }
-
-        for (int i = 1; i < data.length; i++) {
-          try {
-            if (commands.get(command)[i - 1].equals(int.class))
-              args.add(Integer.parseInt(data[i]));
-            else {
-              args.add(data[i]);
-            }
-          } catch (Exception e) {
-            ErrorWithContinue("Some arguments can't be parsed");
-          }
-        }
-        this.getClass().getDeclaredMethod(command.substring(1), commands.get(command)).invoke(this, args.toArray());
-      } catch (ContinueException ignored) {
-      } catch (Exception e) {
-        e.printStackTrace();
       }
+      this.getClass().getDeclaredMethod(data[0].substring(1), commands.get(data[0])).invoke(this, args.toArray());
     }
   }
 
@@ -110,18 +94,17 @@ public class NumberMemorize {
                     "/writeFile [<string> FILENAME] - Export the list data to the specified file");
     System.out.println(
             "===================================================================================================================\n" +
-                    "Number-specific commands:\n" +
+                    "Word-specific commands:\n" +
                     "===================================================================================================================\n" +
-                    "/sum [<int> INDEX1] [<int> INDEX2] - Calculate the sum of the two specified elements\n" +
-                    "/subtract [<int> INDEX1] [<int> INDEX2] - Calculate the difference between the two specified " +
-                    "elements\n" +
-                    "/multiply [<int> INDEX1] [<int> INDEX2] - Calculate the product of the two specified elements\n" +
-                    "/divide [<int> INDEX1] [<int> INDEX2] - Calculate the division of the two specified elements\n" +
-                    "/pow [<int> INDEX1] [<int> INDEX2] - Calculate the power of the specified element to the " +
-                    "specified exponent element\n" +
-                    "/factorial [<int> INDEX] - Calculate the factorial of the specified element\n" +
-                    "/sumAll - Calculate the sum of all elements\n" +
-                    "/average - Calculate the average of all elements\n" +
+                    "/concat [<int> INDEX1] [<int> INDEX2] Concatenate two specified strings\n" +
+                    "/swapCase [<int> INDEX] Output swapped case version of the specified string\n" +
+                    "/upper [<int> INDEX] Output uppercase version of the specified string\n" +
+                    "/lower [<int> INDEX] Output lowercase version of the specified string\n" +
+                    "/reverse [<int> INDEX] Output reversed version of the specified string\n" +
+                    "/length [<int> INDEX] Get the length of the specified string\n" +
+                    "/join [<string> DELIMITER] Join all the strings with the specified delimiter\n" +
+                    "/regex [<string> PATTERN] Search for all elements that match the specified regular expression " +
+                    "pattern\n" +
                     "===================================================================================================================");
   }
 
@@ -129,24 +112,22 @@ public class NumberMemorize {
     this.finished = true;
   }
 
-  void add(int element) {
+  void add(String element) {
     list.add(element);
     System.out.println("Element " + element + " added");
   }
 
   void remove(int index) {
-    if (CheckIndexOutOfBounds(index)) return;
     list.remove(index);
     System.out.println("Element on " + index + " position removed");
   }
 
-  void replace(int index, int element) {
-    if (CheckIndexOutOfBounds(index)) return;
+  void replace(int index, String element) {
     list.set(index, element);
     System.out.println("Element on " + index + " position replaced with " + element);
   }
 
-  void replaceAll(int from, int to) {
+  void replaceAll(String from, String to) {
     for (int i = 0; i < list.size(); i++) {
       if (list.get(i).equals(from)) {
         list.set(i, to);
@@ -155,25 +136,17 @@ public class NumberMemorize {
     System.out.println("Each " + from + " element replaced with " + to);
   }
 
-  void index(int value) {
+  void index(String value) {
     int i = list.indexOf(value);
-    if (i == -1) {
-      System.out.println("There is no such element memorized");
-      return;
-    }
     System.out.println("First occurrence of " + value + " is on " + i + " position");
   }
 
   void sort(String way) {
-    if (!way.equals("ascending") && !way.equals("descending")) {
-      Error("Incorrect argument, possible arguments: ascending, descending");
-      return;
-    }
     for (int i = 0; i < list.size(); i++) {
       for (int j = i; j < list.size(); j++) {
-        if (list.get(i) > list.get(j) && way.equals("ascending") || list.get(i) < list.get(j) && way.equals(
+        if (list.get(i).compareTo(list.get(j)) > 0 && way.equals("ascending") || list.get(i).compareTo(list.get(j)) > 0 && way.equals(
                 "descending")) {
-          int temp = list.get(i);
+          String temp = list.get(i);
           list.set(i, list.get(j));
           list.set(j, temp);
         }
@@ -183,12 +156,8 @@ public class NumberMemorize {
   }
 
   void frequency() {
-    if (list.size() == 0) {
-      System.out.println("There is no elements memorized");
-      return;
-    }
-    Map<Integer, Long> counts = new HashMap<>();
-    for (int i : list) {
+    Map<String, Long> counts = new HashMap<>();
+    for (String i : list) {
       if (counts.get(i) == null) {
         counts.put(i, 1L);
       } else {
@@ -197,23 +166,18 @@ public class NumberMemorize {
     }
 
     System.out.println("Frequency:");
-    for (Map.Entry<Integer, Long> entry : counts.entrySet()) {
+    for (Map.Entry<String, Long> entry : counts.entrySet()) {
       System.out.println(entry.getKey() + ": " + entry.getValue());
     }
   }
 
   void print(int index) {
-    if (CheckIndexOutOfBounds(index)) return;
     System.out.println("Element on " + index + " position is " + list.get(index));
   }
 
   void getRandom() {
-    if(list.size()==0){
-      System.out.println("There is no elements memorized");
-      return;
-    }
     Random random = new Random();
-    System.out.println("Random element: " + list.get(random.nextInt(list.size())));
+    System.out.println("Random element: " + list.get(random.nextInt(1)));
   }
 
   void printAll(String type) {
@@ -224,7 +188,7 @@ public class NumberMemorize {
         break;
       case "lineByLine":
         System.out.println("List of elements:\n");
-        for (int i : list) {
+        for (String i : list) {
           System.out.println(i);
         }
         break;
@@ -237,16 +201,13 @@ public class NumberMemorize {
           System.out.print(list.get(list.size() - 1));
         System.out.println();
         break;
-      default:
-        Error("Incorrect argument, possible arguments: asList, lineByLine, oneLine");
-        break;
     }
   }
 
-  void count(int value) {
+  void count(String value) {
     int amount = 0;
-    for (int i : list) {
-      if (i == value) {
+    for (String i : list) {
+      if (i.equals(value)) {
         amount++;
       }
     }
@@ -258,24 +219,22 @@ public class NumberMemorize {
   }
 
   void equals(int i, int j) {
-    if (CheckIndexOutOfBounds(i) || CheckIndexOutOfBounds(j)) return;
     boolean res = list.get(i).equals(list.get(j));
     System.out.printf("%d and %d elements are%s equal: %s\n",
             i, j, res ? "" : " not", list.get(i) + (res ? " = " : " != ") + list.get(j));
   }
 
-  void readFile(String path) {
-    int before = list.size();
-    FileReaderInteger readerThread = new FileReaderInteger();
-    ArrayList<Integer> list2 = readerThread.read(path);
-    for (int i : list2) {
+  void readFile(String path) throws IOException {
+    FileReaderWords readerThread = new FileReaderWords();
+    ArrayList<String> list2 = readerThread.read(path);
+    for (String i : list2) {
       list.add(i);
     }
-    System.out.println("Data imported: " + (list.size() - before));
+    System.out.println("Data imported: " + (list.size()));
   }
 
-  void writeFile(String path) {
-    FileWriterInteger writer = new FileWriterInteger();
+  void writeFile(String path) throws IOException {
+    FileWriterWords writer = new FileWriterWords();
     writer.write(path, list);
     System.out.println("Data exported: " + list.size());
   }
@@ -286,10 +245,9 @@ public class NumberMemorize {
   }
 
   void compare(int i, int j) {
-    if (CheckIndexOutOfBounds(i) || CheckIndexOutOfBounds(j)) return;
-    if (list.get(i) > list.get(j)) {
+    if (list.get(i).compareTo(list.get(j)) > 0) {
       System.out.println("Result: " + list.get(i) + " > " + list.get(j));
-    } else if (list.get(i) < list.get(j)) {
+    } else if (list.get(i).compareTo(list.get(j)) < 0) {
       System.out.println("Result: " + list.get(i) + " < " + list.get(j));
     } else {
       System.out.println("Result: " + list.get(i) + " = " + list.get(j));
@@ -297,108 +255,77 @@ public class NumberMemorize {
   }
 
   void mirror() {
-    ArrayList<Integer> list2 = new ArrayList<>();
+    ArrayList<String> list2 = new ArrayList<>();
     for (int i = list.size() - 1; i >= 0; i--) {
       list2.add(list.get(i));
     }
-    list = list2;
     System.out.println("Data reversed");
   }
 
   void unique() {
-    Map<Integer, Long> counts = new HashMap<>();
-    for (int i : list) {
+    Map<String, Long> counts = new HashMap<>();
+    for (String i : list) {
       if (counts.get(i) == null) {
         counts.put(i, 1L);
       } else {
         counts.put(i, counts.get(i) + 1);
       }
     }
-    ArrayList<Integer> list2 = new ArrayList<>();
-    for (Map.Entry<Integer, Long> entry : counts.entrySet()) {
+    ArrayList<String> list2 = new ArrayList<>();
+    for (Map.Entry<String, Long> entry : counts.entrySet()) {
       list2.add(entry.getKey());
     }
     System.out.println("Unique values: " + Arrays.toString(list2.toArray()));
   }
 
-  void ErrorWithContinue(String info) throws ContinueException {
-    System.out.printf("Error while performing command \"%s\"!\nDescription: %s!\n", command, info);
-    throw new ContinueException("");
+  void concat(int i, int j) {
+    System.out.println("Concatenated string: " + list.get(i) + list.get(j));
   }
 
-  void Error(String info) {
-    System.out.printf("Error while performing command \"%s\"!\nDescription: %s!\n", command, info);
-  }
-
-  boolean CheckIndexOutOfBounds(int i) {
-    if (i < 0 || i >= list.size()) {
-      Error("Index out of bounds");
-      return true;
+  void swapCase(int i) {
+    System.out.printf("\"%s\" string with swapped case: ", list.get(i));
+    for (char c : (list.get(i)).toCharArray()) {
+      if (Character.isUpperCase(c)) {
+        System.out.print(Character.toUpperCase(c));
+      } else if (Character.isLowerCase(c)) {
+        System.out.print(Character.toUpperCase(c));
+      } else {
+        System.out.print(c);
+      }
     }
-    return false;
+    System.out.println();
   }
 
-  void sum(int i, int j) {
-    if (CheckIndexOutOfBounds(i) || CheckIndexOutOfBounds(j)) return;
-    int a = list.get(i), b = list.get(j);
-    int res = a + b;
-    System.out.printf("Calculation performed: %d + %d = %d\n", a, b, res);
+  void upper(int i) {
+    System.out.printf("Uppercase \"%s\" string: %s\n", list.get(i), (list.get(i)).toUpperCase());
   }
 
-  void subtract(int i, int j) {
-    if (CheckIndexOutOfBounds(i) || CheckIndexOutOfBounds(j)) return;
-    int a = list.get(i), b = list.get(j);
-    int res = a - b;
-    System.out.printf("Calculation performed: %d - %d = %d\n", a, b, res);
+  void lower(int i) {
+    System.out.printf("Lowercase \"%s\" string: %s\n", list.get(i), (list.get(i)).toLowerCase());
   }
 
-  void multiply(int i, int j) {
-    if (CheckIndexOutOfBounds(i) || CheckIndexOutOfBounds(j)) return;
-    int a = list.get(i), b = list.get(j);
-    int res = a * b;
-    System.out.printf("Calculation performed: %d * %d = %d\n", a, b, res);
+  void reverse(int i) {
+    System.out.printf("Reversed \"%s\" string: %s\n", list.get(i), new StringBuilder(list.get(i)).reverse());
   }
 
-  void divide(int i, int j) {
-    if (CheckIndexOutOfBounds(i) || CheckIndexOutOfBounds(j)) return;
-    int a = list.get(i), b = list.get(j);
-    if (b == 0) {
-      Error("Division by zero");
-      return;
+  void length(int i) {
+    System.out.printf("Length of \"%s\" string: %d\n", list.get(i), (list.get(i)).length());
+  }
+
+  void join(String delimiter) {
+    System.out.printf("Joined string: %s\n", String.join("_", list));
+  }
+
+  void regex(String regex) {
+    List<String> matchingElements = new ArrayList<>();
+    Pattern pattern;
+    pattern = Pattern.compile(regex);
+    for (String element : list) {
+      if (pattern.matcher(element).matches()) {
+        matchingElements.add(element);
+      }
     }
-    float res = (float) a / (float) b;
-    System.out.printf("Calculation performed: %d / %d = %f\n", a, b, res);
-  }
-
-  void pow(int i, int j) {
-    if (CheckIndexOutOfBounds(i) || CheckIndexOutOfBounds(j)) return;
-    int a = list.get(i), b = list.get(j);
-    long res = (long) Math.pow(a, b);
-    System.out.printf("Calculation performed: %d ^ %d = %d\n", a, b, res);
-  }
-
-  void factorial(int index) {
-    if (CheckIndexOutOfBounds(index)) return;
-    long res = 1;
-    for (int i = 2; i <= list.get(index); i++) {
-      res = res * i;
-    }
-    System.out.printf("Calculation performed: %d! = %d\n", list.get(index), res);
-  }
-
-  void sumAll() {
-    int sum = 0;
-    for (int i : list) {
-      sum += i;
-    }
-    System.out.println("Sum of all elements: " + sum);
-  }
-
-  void average() {
-    int sum = 0;
-    for (int i : list) {
-      sum += i;
-    }
-    System.out.println("Average of all elements: " + sum / list.size());
+    System.out.println("Strings that match provided regex:");
+    System.out.println(Arrays.toString(matchingElements.toArray()));
   }
 }

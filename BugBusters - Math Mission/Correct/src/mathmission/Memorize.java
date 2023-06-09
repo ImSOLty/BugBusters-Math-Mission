@@ -189,6 +189,10 @@ public class Memorize<T> {
   }
 
   void getRandom() {
+    if(list.size()==0){
+      System.out.println("There is no elements memorized");
+      return;
+    }
     Random random = new Random();
     System.out.println("Random element: " + list.get(random.nextInt(list.size())));
   }

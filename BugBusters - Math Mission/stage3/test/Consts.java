@@ -82,12 +82,12 @@ public class Consts {
           ===================================================================================================================
           Word-specific commands:
           ===================================================================================================================
-          /concat [INDEX1] [INDEX2] Concatenate two specified strings
-          /swapCase [INDEX] Output swapped case version of the specified string
-          /upper [INDEX] Output uppercase version of the specified string
-          /lower [INDEX] Output lowercase version of the specified string
-          /reverse [INDEX] Output reversed version of the specified string
-          /length [INDEX] Get the length of the specified string
+          /concat [<int> INDEX1] [<int> INDEX2] Concatenate two specified strings
+          /swapCase [<int> INDEX] Output swapped case version of the specified string
+          /upper [<int> INDEX] Output uppercase version of the specified string
+          /lower [<int> INDEX] Output lowercase version of the specified string
+          /reverse [<int> INDEX] Output reversed version of the specified string
+          /length [<int> INDEX] Get the length of the specified string
           /join [<string> DELIMITER] Join all the strings with the specified delimiter
           /regex [<string> PATTERN] Search for all elements that match the specified regular expression pattern
           ===================================================================================================================

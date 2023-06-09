@@ -224,12 +224,12 @@ class MemorizeString extends Memorize {
             "===================================================================================================================\n" +
                     "Word-specific commands:\n" +
                     "===================================================================================================================\n" +
-                    "/concat [INDEX1] [INDEX2] Concatenate two specified strings\n" +
-                    "/swapCase [INDEX] Output swapped case version of the specified string\n" +
-                    "/upper [INDEX] Output uppercase version of the specified string\n" +
-                    "/lower [INDEX] Output lowercase version of the specified string\n" +
-                    "/reverse [INDEX] Output reversed version of the specified string\n" +
-                    "/length [INDEX] Get the length of the specified string\n" +
+                    "/concat [<int> INDEX1] [<int> INDEX2] Concatenate two specified strings\n" +
+                    "/swapCase [<int> INDEX] Output swapped case version of the specified string\n" +
+                    "/upper [<int> INDEX] Output uppercase version of the specified string\n" +
+                    "/lower [<int> INDEX] Output lowercase version of the specified string\n" +
+                    "/reverse [<int> INDEX] Output reversed version of the specified string\n" +
+                    "/length [<int> INDEX] Get the length of the specified string\n" +
                     "/join [<string> DELIMITER] Join all the strings with the specified delimiter\n" +
                     "/regex [<string> PATTERN] Search for all elements that match the specified regular expression " +
                     "pattern\n" +
