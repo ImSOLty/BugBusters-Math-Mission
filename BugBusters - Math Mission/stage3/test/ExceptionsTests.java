@@ -17,7 +17,7 @@ public class ExceptionsTests extends StageTest {
     pr.start();
     for (String s : new String[]{"4", "integer", "-2"}) {
       CheckFeedback(pr.execute(s), "Incorrect command",
-              "Other option than '0', '1', '2' or '3' selected in main menu","any type");
+              "Other option than '0', '1', '2' or '3' selected in main menu", "any type");
     }
     return CheckResult.correct();
   }
@@ -91,34 +91,39 @@ public class ExceptionsTests extends StageTest {
   @DynamicTest(data = "dataForTesting")
   CheckResult NumberFormatExceptionCheck(String typeEx, String type, Object[] data, Object additional) {
     TestedProgram pr = StartAndInitialize(typeEx, data);
-    for (String s : new String[]{"/remove A", "/print A", "/replace A " + additional, "/equals A B", "/compare A B"}) {
+    for (String s : new String[]{"/remove A", "/print A", "/replace A " + additional, "/equals A B", "/compare A B",
+            "/remove 4294967296", "/print 4294967296", "/replace 4294967296 " + additional,
+            "/equals 4294967296 4294967296", "/compare 4294967296 4294967296"}) {
       UpdateFeedback(pr, type, s.split(" ")[0], NumberFormatException.class);
       CheckFeedback(pr.execute(s), "Some arguments can't be parsed!",
               "Integer arguments parsing", type);
     }
     String[][] specifiedPrompts = {
             {
-                    "/flip A",
-                    "/and A 2", "/and 2 A",
-                    "/or A 2", "/or 2 A",
-                    "/logShift A"
+                    "/flip A", "/flip 4294967296",
+                    "/and A 2", "/and 2 A", "/and 4294967296 2", "/and 2 4294967296",
+                    "/or A 2", "/or 2 A", "/or 4294967296 2", "/or 2 4294967296",
+                    "/logShift A", "/logShift 4294967296"
             },
             {
                     "/add A", "/replace 2 A", "/replaceAll 2 A", "/replaceAll A 2", "/index A", "/count A",
-                    "/sum 2 A", "/sum A 2",
-                    "/subtract 2 A", "/subtract A 2",
-                    "/multiply 2 A", "/multiply A 2",
-                    "/divide 2 A", "/divide A 2",
-                    "/pow 2 A", "/pow A 2",
-                    "/factorial A"
+                    "/add 4294967296", "/replace 2 4294967296", "/replaceAll 2 4294967296", "/replaceAll 4294967296 2",
+                    "/index 4294967296", "/count 4294967296",
+
+                    "/sum 2 A", "/sum A 2", "/sum 2 4294967296", "/sum 4294967296 2",
+                    "/subtract 2 A", "/subtract A 2", "/subtract 2 4294967296", "/subtract 4294967296 2",
+                    "/multiply 2 A", "/multiply A 2", "/multiply 2 4294967296", "/multiply 4294967296 2",
+                    "/divide 2 A", "/divide A 2", "/divide 2 4294967296", "/divide 4294967296 2",
+                    "/pow 2 A", "/pow A 2", "/pow 2 4294967296", "/pow 4294967296 2",
+                    "/factorial A", "/factorial 4294967296",
             },
             {
-                    "/concat 2 A", "/concat A 2",
-                    "/swapCase A",
-                    "/upper A",
-                    "/lower A",
-                    "/reverse A",
-                    "/length A",
+                    "/concat 2 A", "/concat A 2", "/concat 2 4294967296", "/concat 4294967296 2",
+                    "/swapCase A", "/swapCase 4294967296",
+                    "/upper A", "/upper 4294967296",
+                    "/lower A", "/lower 4294967296",
+                    "/reverse A", "/reverse 4294967296",
+                    "/length A", "/length 4294967296",
             }
     };
     for (String s : specifiedPrompts[Integer.parseInt(typeEx) - 1]) {
@@ -190,8 +195,10 @@ public class ExceptionsTests extends StageTest {
             "Calling \"/index\" operation without such element in a list", type);
     CheckFeedback(pr.execute("/sort up"), "Incorrect argument, possible arguments: ascending, descending",
             "Calling \"/sort\" operation with an argument that is nor \"ascending\" nor \"descending\"", type);
-    CheckFeedback(pr.execute("/printAll somehow"), "Incorrect argument, possible arguments: asList, lineByLine, oneLine",
-            "Calling \"/printAll\" operation with an argument that is nor \"asList\" nor \"lineByLine\" nor \"oneLine\"", type);
+    CheckFeedback(pr.execute("/printAll somehow"), "Incorrect argument, possible arguments: asList, lineByLine, " +
+                    "oneLine",
+            "Calling \"/printAll\" operation with an argument that is nor \"asList\" nor \"lineByLine\" nor " +
+                    "\"oneLine\"", type);
     return CheckResult.correct();
   }
 
@@ -237,6 +244,22 @@ public class ExceptionsTests extends StageTest {
     return CheckResult.correct();
   }
 
+  @DynamicTest()
+  CheckResult FactorialFeedbackCheck() {
+    TestedProgram pr = new TestedProgram();
+    pr.start();
+    pr.execute("2");//Integers
+    pr.execute("/add -1");
+    CheckFeedback(pr.execute("/factorial 0"), "undefined",
+            "Calling \"/factorial\" operation for a negative number", "numbers");
+    pr.execute("/add 21");
+
+    UpdateFeedback(pr, "integers", "/factorial", ArithmeticException.class);
+    CheckFeedback(pr.execute("/factorial 21"), "Can't perform this calculation",
+            "Calling \"/factorial\" operation for a number greater than 20 (result is greater than long)", "numbers");
+    return CheckResult.correct();
+  }
+
   TestedProgram StartAndInitialize(String typeEx, Object[] data) {
     TestedProgram pr = new TestedProgram();
     pr.start();
@@ -268,6 +291,7 @@ public class ExceptionsTests extends StageTest {
 
   void CheckFeedback(String got, String expected, String action, String type) {
     if (!got.toLowerCase().contains(expected.toLowerCase()))
-      throw new WrongAnswer("Feedback is incorrect for \"" + action + "\" case for "+type+". Expected existence of \"" + expected + "\" substring");
+      throw new WrongAnswer("Feedback is incorrect for \"" + action + "\" case for " + type + ". Expected existence " +
+              "of \"" + expected + "\" substring");
   }
 }

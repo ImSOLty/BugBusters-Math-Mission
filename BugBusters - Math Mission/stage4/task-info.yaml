@@ -6,8 +6,6 @@ files:
   visible: true
 - name: src/Memory.java
   visible: true
-- name: test/MemoryTests.java
-  visible: false
 - name: test/Consts.java
   visible: false
 - name: src/WordMemorize.java
@@ -17,4 +15,8 @@ files:
 - name: src/FileProcessor.java
   visible: true
 - name: test/ExceptionsTests.java
+  visible: false
+- name: test/BugTests.java
+  visible: false
+- name: test/MemoryTests.java
   visible: false

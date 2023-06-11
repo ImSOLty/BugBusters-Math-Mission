@@ -16,3 +16,5 @@ files:
   visible: true
 - name: test/ExceptionsTests.java
   visible: false
+- name: test/BugTests.java
+  visible: false

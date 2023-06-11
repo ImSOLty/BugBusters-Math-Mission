@@ -48,21 +48,21 @@ class MemorizeInteger extends Memorize {
   void sum(int i, int j) {
     if (CheckIndexOutOfBounds(i) || CheckIndexOutOfBounds(j)) return;
     int a = (Integer) list.get(i), b = (Integer) list.get(j);
-    int res = a + b;
+    long res = (long) a + (long) b;
     System.out.printf("Calculation performed: %d + %d = %d\n", a, b, res);
   }
 
   void subtract(int i, int j) {
     if (CheckIndexOutOfBounds(i) || CheckIndexOutOfBounds(j)) return;
     int a = (Integer) list.get(i), b = (Integer) list.get(j);
-    int res = a - b;
+    long res = (long) a - (long) b;
     System.out.printf("Calculation performed: %d - %d = %d\n", a, b, res);
   }
 
   void multiply(int i, int j) {
     if (CheckIndexOutOfBounds(i) || CheckIndexOutOfBounds(j)) return;
     int a = (Integer) list.get(i), b = (Integer) list.get(j);
-    int res = a * b;
+    long res = (long) a * b;
     System.out.printf("Calculation performed: %d * %d = %d\n", a, b, res);
   }
 
@@ -80,22 +80,38 @@ class MemorizeInteger extends Memorize {
   void pow(int i, int j) {
     if (CheckIndexOutOfBounds(i) || CheckIndexOutOfBounds(j)) return;
     int a = (Integer) list.get(i), b = (Integer) list.get(j);
-    long res = (long) Math.pow(a, b);
-    System.out.printf("Calculation performed: %d ^ %d = %d\n", a, b, res);
+    double res = (double) Math.pow(a, b);
+    System.out.printf("Calculation performed: %d ^ %d = %f\n", a, b, res);
   }
 
   void factorial(int index) {
     if (CheckIndexOutOfBounds(index)) return;
+    if ((Integer) list.get(index) < 0) {
+      System.out.println("Calculation performed: Undefined");
+      return;
+    }
+    if ((Integer) list.get(index) > 20) {
+      System.out.println("Can't perform this calculation");
+      return;
+    }
     long res = LongStream.rangeClosed(1, (Integer) list.get(index)).reduce(1, (long x, long y) -> x * y);
     System.out.printf("Calculation performed: %d! = %d\n", (Integer) list.get(index), res);
   }
 
   void sumAll() {
-    System.out.println("Sum of all elements: " + list.stream().mapToInt(Integer.class::cast).sum());
+    long sum = 0;
+    for (Object i : list) sum += (Integer) i;
+    System.out.println("Sum of all elements: " + sum);
   }
 
   void average() {
-    System.out.println("Average of all elements: " + list.stream().mapToInt(Integer.class::cast).sum() / list.size());
+    long sum = 0;
+    for (Object i : list) sum += (Integer) i;
+    if (sum % list.size() == 0) {
+      System.out.println("Average of all elements: " + sum / list.size());
+    }else{
+      System.out.println("Average of all elements: " + (double) sum / list.size());
+    }
   }
 }
 
@@ -249,7 +265,7 @@ class MemorizeString extends Memorize {
         System.out.print(Character.toLowerCase(c));
       } else if (Character.isLowerCase(c)) {
         System.out.print(Character.toUpperCase(c));
-      } else{
+      } else {
         System.out.print(c);
       }
     }

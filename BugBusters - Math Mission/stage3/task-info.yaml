@@ -1,7 +1,5 @@
 type: edu
 files:
-- name: test/ExceptionsTests.java
-  visible: false
 - name: test/Consts.java
   visible: false
 - name: test/BehaviourTests.java
@@ -16,3 +14,7 @@ files:
   visible: true
 - name: src/FileProcessor.java
   visible: true
+- name: test/BugTests.java
+  visible: false
+- name: test/ExceptionsTests.java
+  visible: false

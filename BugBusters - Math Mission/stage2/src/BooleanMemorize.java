@@ -332,7 +332,7 @@ public class BooleanMemorize {
         System.out.println("Converted: " + Long.parseLong(binary.toString(), 2));
         break;
       case "string":
-        int byteSize = list.size();
+        int byteSize = Byte.SIZE;
         StringBuilder sb = new StringBuilder();
         if (binary.length() % byteSize != 0) {
           System.out.println("Amount of elements is not divisible by 8, so the last " + binary.length() % byteSize + " of " +

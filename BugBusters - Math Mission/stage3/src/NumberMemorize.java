@@ -286,19 +286,19 @@ public class NumberMemorize {
 
   void sum(int i, int j) {
     int a = list.get(i), b = list.get(j);
-    int res = a + b;
+    long res = (long) a + (long) b;
     System.out.printf("Calculation performed: %d + %d = %d\n", a, b, res);
   }
 
   void subtract(int i, int j) {
     int a = list.get(i), b = list.get(j);
-    int res = a - b;
+    long res = (long) a - (long) b;
     System.out.printf("Calculation performed: %d - %d = %d\n", a, b, res);
   }
 
   void multiply(int i, int j) {
     int a = list.get(i), b = list.get(j);
-    int res = a * b;
+    long res = (long) a * b;
     System.out.printf("Calculation performed: %d * %d = %d\n", a, b, res);
   }
 
@@ -310,8 +310,8 @@ public class NumberMemorize {
 
   void pow(int i, int j) {
     int a = list.get(i), b = list.get(j);
-    long res = (long) Math.pow(a, b);
-    System.out.printf("Calculation performed: %d ^ %d = %d\n", a, b, res);
+    double res = (double) Math.pow(a, b);
+    System.out.printf("Calculation performed: %d ^ %d = %f\n", a, b, res);
   }
 
   void factorial(int index) {
@@ -323,7 +323,7 @@ public class NumberMemorize {
   }
 
   void sumAll() {
-    int sum = 0;
+    long sum = 0;
     for (int i : list) {
       sum += i;
     }
@@ -331,10 +331,14 @@ public class NumberMemorize {
   }
 
   void average() {
-    int sum = 0;
+    long sum = 0;
     for (int i : list) {
       sum += i;
     }
-    System.out.println("Average of all elements: " + sum / list.size());
+    if (sum % list.size() == 0) {
+      System.out.println("Average of all elements: " + sum / list.size());
+    }else{
+      System.out.println("Average of all elements: " + (double) sum / list.size());
+    }
   }
 }

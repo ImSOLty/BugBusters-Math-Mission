@@ -298,8 +298,8 @@ public class NumberMemorize {
 
   void divide(int i, int j) {
     int a = list.get(i), b = list.get(j);
-    float res = (float) a / (float) b;
-    System.out.printf("Calculation performed: %d / %d = %f\n", a, b, res);
+    int res =  a / b;
+    System.out.printf("Calculation performed: %d / %d = %d\n", a, b, res);
   }
 
   void pow(int i, int j) {

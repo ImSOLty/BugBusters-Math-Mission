@@ -237,6 +237,17 @@ public class ExceptionsTests extends StageTest {
     return CheckResult.correct();
   }
 
+  @DynamicTest()
+  CheckResult FactorialFeedbackCheck() {
+    TestedProgram pr = new TestedProgram();
+    pr.start();
+    pr.execute("2");//Integers
+    pr.execute("/add -1");
+    CheckFeedback(pr.execute("/factorial 0"), "undefined",
+            "Calling \"/factorial\" operation for a negative number", "numbers");
+    return CheckResult.correct();
+  }
+
   TestedProgram StartAndInitialize(String typeEx, Object[] data) {
     TestedProgram pr = new TestedProgram();
     pr.start();

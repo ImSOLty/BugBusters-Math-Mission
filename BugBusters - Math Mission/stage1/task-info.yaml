@@ -10,9 +10,7 @@ files:
   visible: true
 - name: src/WordMemorize.java
   visible: true
-- name: test/Consts.java
-  visible: false
 - name: test/BehaviourTests.java
   visible: false
-- name: test/BugTests.java
+- name: test/Consts.java
   visible: false
