@@ -24,7 +24,8 @@ public class BehaviourTests extends StageTest {
     }
   }
 
-  Map<String, String> commandsRegex = Stream.of(new Object[][]{
+  // is there a real need to cast Object to String?
+  Map<String, String> commandsRegex = Stream.of(new String[][]{
           {"/add", "Element .+ added"},
           {"/remove", "Element on \\d+ position removed"},
           {"/replace", "Element on \\d+ position replaced with .+"},
@@ -71,7 +72,7 @@ public class BehaviourTests extends StageTest {
           {"/join", "Joined string: .+"},
           {"/regex", "((There is no strings that match provided regex)|(Strings that match provided regex:\n" +
                   "\\[.+(,\\s*.+)+\\]))"},
-  }).collect(Collectors.toMap(data -> (String) data[0], data -> (String) data[1]));
+  }).collect(Collectors.toMap(data -> data[0], data -> data[1]));
 
   @DynamicTest(order=0)
   CheckResult outputOnStartAndExit() {
@@ -183,8 +184,10 @@ public class BehaviourTests extends StageTest {
       output = pr.execute(prompt.replaceAll("%s", element.toString()));
       String command = prompt.split(" ")[0];
       if (!output.matches(commandsRegex.get(command) + "\\nPerform action:\\n")) {
-        return CheckResult.wrong(Consts.MODIFIED + "Output for \"" + command + "\" command not matching the initial " +
-                "one for \"" + type + "\" type.");
+        // isn't it cleaner and easier to read?
+        return CheckResult.wrong(Consts.MODIFIED + """
+                        Output for "%s" command not matching the initial one for "%s" type.
+                        """.formatted(command, type));
       }
     }
 
@@ -520,18 +523,18 @@ public class BehaviourTests extends StageTest {
     String fileName = "";
     Object value = null;
     switch (type) {
-      case "booleans":
+      case "booleans" -> {
         value = true;
         fileName = "booleans.txt";
-        break;
-      case "numbers":
+      }
+      case "numbers" -> {
         value = 2147483647;
         fileName = "integers.txt";
-        break;
-      case "words":
+      }
+      case "words" -> {
         value = "CakeIsALie";
         fileName = "strings.txt";
-        break;
+      }
     }
     String output = pr.execute("/readFile " + fileName);
     if (!output.contains("3")) {
