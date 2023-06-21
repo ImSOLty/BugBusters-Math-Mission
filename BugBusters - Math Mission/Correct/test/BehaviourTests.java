@@ -263,7 +263,7 @@ public class BehaviourTests extends StageTest {
     };
   }
 
-  TestedProgram StartAndInitialize(String typeEx, Object[] data) {
+  TestedProgram startAndInitialize(String typeEx, Object[] data) {
     TestedProgram pr = new TestedProgram();
     pr.start();
     pr.execute(typeEx);
@@ -273,7 +273,7 @@ public class BehaviourTests extends StageTest {
     return pr;
   }
 
-  void ElementsExistence(TestedProgram pr, Object[] expected, String command, String type) {
+  void elementsExistence(TestedProgram pr, Object[] expected, String command, String type) {
     String output = pr.execute("/printAll oneLine").strip();
     if (!output.equals("List of elements:\n" +
             Arrays.stream(expected).map(String::valueOf).collect(Collectors.joining(" ")).strip() +
@@ -294,14 +294,14 @@ public class BehaviourTests extends StageTest {
         return CheckResult.wrong(Consts.INCORRECT_BEHAVIOUR +
                 "Output for \"/add\" command is incorrect for " + type + " type. It should contain added element.");
       }
-      ElementsExistence(pr, Arrays.copyOfRange(data, 0, i + 1), "/add", type);
+      elementsExistence(pr, Arrays.copyOfRange(data, 0, i + 1), "/add", type);
     }
     return CheckResult.correct();
   }
 
   @DynamicTest(data = "dataForTesting", order = 5)
   CheckResult resultOnActionsPrint(String typeEx, String type, Object[] data, Object additional) {
-    TestedProgram pr = StartAndInitialize(typeEx, data);
+    TestedProgram pr = startAndInitialize(typeEx, data);
     for (int i = 0; i < data.length; i++) {
       if (!pr.execute("/print " + i).contains(data[i].toString())) {
         return CheckResult.wrong(Consts.INCORRECT_BEHAVIOUR +
@@ -314,20 +314,20 @@ public class BehaviourTests extends StageTest {
 
   @DynamicTest(data = "dataForTesting", order = 6)
   CheckResult resultOnActionsRemove(String typeEx, String type, Object[] data, Object additional) {
-    TestedProgram pr = StartAndInitialize(typeEx, data);
+    TestedProgram pr = startAndInitialize(typeEx, data);
     for (int i = data.length - 1; i >= 0; i--) {
       if (!pr.execute("/remove " + i).contains(String.valueOf(i))) {
         return CheckResult.wrong(Consts.INCORRECT_BEHAVIOUR +
                 "Output for \"/remove\" command is incorrect for " + type + " type. It should contain specified index");
       }
-      ElementsExistence(pr, Arrays.copyOfRange(data, 0, i), "/remove", type);
+      elementsExistence(pr, Arrays.copyOfRange(data, 0, i), "/remove", type);
     }
     return CheckResult.correct();
   }
 
   @DynamicTest(data = "dataForTesting", order = 7)
   CheckResult resultOnActionsReplace(String typeEx, String type, Object[] data, Object additional) {
-    TestedProgram pr = StartAndInitialize(typeEx, data);
+    TestedProgram pr = startAndInitialize(typeEx, data);
     String output;
     Object[] result = Arrays.copyOf(data, data.length);
 
@@ -339,14 +339,14 @@ public class BehaviourTests extends StageTest {
                 "index and a value");
       }
       result[i] = additional;
-      ElementsExistence(pr, result, "/replace", type);
+      elementsExistence(pr, result, "/replace", type);
     }
     return CheckResult.correct();
   }
 
   @DynamicTest(data = "dataForTesting", order = 8)
   CheckResult resultOnActionsReplaceAll(String typeEx, String type, Object[] data, Object additional) {
-    TestedProgram pr = StartAndInitialize(typeEx, data);
+    TestedProgram pr = startAndInitialize(typeEx, data);
     List<Object> result = Arrays.asList(Arrays.copyOf(data, data.length));
     String output = pr.execute("/replaceAll " + data[0] + " " + additional);
     if (!output.contains(data[0].toString()) || !output.contains(additional.toString())) {
@@ -355,13 +355,13 @@ public class BehaviourTests extends StageTest {
               "both values");
     }
     Collections.replaceAll(result, data[0], additional);
-    ElementsExistence(pr, result.toArray(), "/replaceAll", type);
+    elementsExistence(pr, result.toArray(), "/replaceAll", type);
     return CheckResult.correct();
   }
 
   @DynamicTest(data = "dataForTesting", order = 9)
   CheckResult resultOnActionsIndex(String typeEx, String type, Object[] data, Object additional) {
-    TestedProgram pr = StartAndInitialize(typeEx, data);
+    TestedProgram pr = startAndInitialize(typeEx, data);
     List<Object> copy = Arrays.asList(data);
     for (Object o : data) {
       String output = pr.execute("/index " + o);
@@ -377,17 +377,17 @@ public class BehaviourTests extends StageTest {
   @DynamicTest(data = "dataForTesting", order = 10)
   CheckResult resultOnActionsSort(String typeEx, String type, Object[] data, Object additional) {
 
-    TestedProgram pr = StartAndInitialize(typeEx, data);
+    TestedProgram pr = startAndInitialize(typeEx, data);
     List<Object> copy = Arrays.asList(data);
     pr.execute("/sort ascending");
     copy.sort(new CustomComparator());
-    ElementsExistence(pr, copy.toArray(), "/sort", type);
+    elementsExistence(pr, copy.toArray(), "/sort", type);
     return CheckResult.correct();
   }
 
   @DynamicTest(data = "dataForTesting", order = 11)
   CheckResult resultOnActionsFrequency(String typeEx, String type, Object[] data, Object additional) {
-    TestedProgram pr = StartAndInitialize(typeEx, data);
+    TestedProgram pr = startAndInitialize(typeEx, data);
     Map<Object, Long> counts = Arrays.stream(data)
             .collect(Collectors.groupingBy(e -> e, Collectors.counting()));
 
@@ -409,7 +409,7 @@ public class BehaviourTests extends StageTest {
 
   @DynamicTest(data = "dataForTesting", order = 12)
   CheckResult resultOnActionsCount(String typeEx, String type, Object[] data, Object additional) {
-    TestedProgram pr = StartAndInitialize(typeEx, data);
+    TestedProgram pr = startAndInitialize(typeEx, data);
     List<Object> copy = Arrays.asList(data);
     for (Object o : data) {
       String output = pr.execute("/count " + o);
@@ -425,7 +425,7 @@ public class BehaviourTests extends StageTest {
 
   @DynamicTest(data = "dataForTesting", order = 13)
   CheckResult resultOnActionsSize(String typeEx, String type, Object[] data, Object additional) {
-    TestedProgram pr = StartAndInitialize(typeEx, data);
+    TestedProgram pr = startAndInitialize(typeEx, data);
 
     String output = pr.execute("/size");
     if (!output.contains(String.valueOf(data.length))) {
@@ -438,7 +438,7 @@ public class BehaviourTests extends StageTest {
 
   @DynamicTest(data = "dataForTesting", order = 14)
   CheckResult resultOnActionsEquals(String typeEx, String type, Object[] data, Object additional) {
-    TestedProgram pr = StartAndInitialize(typeEx, data);
+    TestedProgram pr = startAndInitialize(typeEx, data);
 
     for (int i = 0; i < data.length; i++) {
       for (int j = 0; j < data.length; j++) {
@@ -457,15 +457,15 @@ public class BehaviourTests extends StageTest {
 
   @DynamicTest(data = "dataForTesting", order = 15)
   CheckResult resultOnActionsClear(String typeEx, String type, Object[] data, Object additional) {
-    TestedProgram pr = StartAndInitialize(typeEx, data);
+    TestedProgram pr = startAndInitialize(typeEx, data);
     pr.execute("/clear");
-    ElementsExistence(pr, new Object[]{}, "/clear", type);
+    elementsExistence(pr, new Object[]{}, "/clear", type);
     return CheckResult.correct();
   }
 
   @DynamicTest(data = "dataForTesting", order = 16)
   CheckResult resultOnActionsCompare(String typeEx, String type, Object[] data, Object additional) {
-    TestedProgram pr = StartAndInitialize(typeEx, data);
+    TestedProgram pr = startAndInitialize(typeEx, data);
     for (int i = 0; i < data.length; i++) {
       for (int j = 0; j < data.length; j++) {
         String output = pr.execute("/compare " + i + " " + j);
@@ -485,17 +485,17 @@ public class BehaviourTests extends StageTest {
 
   @DynamicTest(data = "dataForTesting", order = 17)
   CheckResult resultOnActionsMirror(String typeEx, String type, Object[] data, Object additional) {
-    TestedProgram pr = StartAndInitialize(typeEx, data);
+    TestedProgram pr = startAndInitialize(typeEx, data);
     String output = pr.execute("/mirror");
     List<Object> copy = Arrays.asList(data);
     Collections.reverse(copy);
-    ElementsExistence(pr, copy.toArray(), "/mirror", type);
+    elementsExistence(pr, copy.toArray(), "/mirror", type);
     return CheckResult.correct();
   }
 
   @DynamicTest(data = "dataForTesting", order = 18)
   CheckResult resultOnActionsUnique(String typeEx, String type, Object[] data, Object additional) {
-    TestedProgram pr = StartAndInitialize(typeEx, data);
+    TestedProgram pr = startAndInitialize(typeEx, data);
     String output = pr.execute("/unique");
     Set<Object> unique = new HashSet<>(Arrays.asList(data));
     if (!output.contains(Arrays.toString(unique.toArray()))) {
@@ -543,13 +543,13 @@ public class BehaviourTests extends StageTest {
               "imported " +
               "elements");
     }
-    ElementsExistence(pr, new Object[]{value, value, value}, "/readFile", type);
+    elementsExistence(pr, new Object[]{value, value, value}, "/readFile", type);
     return CheckResult.correct();
   }
 
   @DynamicTest(data = "dataForTesting", order = 20)
   CheckResult resultOnActionsWriteFile(String typeEx, String type, Object[] data, Object additional) {
-    TestedProgram pr = StartAndInitialize(typeEx, data);
+    TestedProgram pr = startAndInitialize(typeEx, data);
 
     String fileName = "result.txt";
     String output = pr.execute("/writeFile " + fileName);
@@ -561,7 +561,7 @@ public class BehaviourTests extends StageTest {
     }
     pr.execute("/clear");
     pr.execute("/readFile " + fileName);
-    ElementsExistence(pr, data, "/writeFile\" and following \"/readFile", type);
+    elementsExistence(pr, data, "/writeFile\" and following \"/readFile", type);
     return CheckResult.correct();
   }
 
@@ -634,11 +634,11 @@ public class BehaviourTests extends StageTest {
       return CheckResult.wrong(Consts.INCORRECT_BEHAVIOUR +
               "Output for \"/flip\" command is incorrect for booleans type. It should contain specified position");
     }
-    ElementsExistence(pr, list.toArray(), "/flip", "booleans");
+    elementsExistence(pr, list.toArray(), "/flip", "booleans");
 
     pr.execute("/negateAll");
     list.replaceAll(e -> !e);
-    ElementsExistence(pr, list.toArray(), "/negateAll", "booleans");
+    elementsExistence(pr, list.toArray(), "/negateAll", "booleans");
 
     output = pr.execute("/logShift 2");
     Collections.rotate(list, 2);
@@ -646,7 +646,7 @@ public class BehaviourTests extends StageTest {
       return CheckResult.wrong(Consts.INCORRECT_BEHAVIOUR +
               "Output for \"/logShift\" command is incorrect for booleans type. It should contain specified amount");
     }
-    ElementsExistence(pr, list.toArray(), "/logShift", "booleans");
+    elementsExistence(pr, list.toArray(), "/logShift", "booleans");
 
     output = pr.execute("/logShift -2");
     Collections.rotate(list, -2);
@@ -654,7 +654,7 @@ public class BehaviourTests extends StageTest {
       return CheckResult.wrong(Consts.INCORRECT_BEHAVIOUR +
               "Output for \"/logShift\" command is incorrect for booleans type. It should contain specified amount");
     }
-    ElementsExistence(pr, list.toArray(), "/logShift", "booleans");
+    elementsExistence(pr, list.toArray(), "/logShift", "booleans");
 
     String[][] promptResult = {
             {"/and", " 0 4", "(false && true) is false"},
