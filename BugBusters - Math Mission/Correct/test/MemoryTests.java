@@ -84,9 +84,9 @@ public class MemoryTests extends StageTest {
     for (Object[] d : data) {
       lastMemorizerType = (String) d[1];
       updateFeedbackOnException(pr, lastCommand, lastMemorizerType);
-      if ((float) startUsage / (float) memoryMXBean.getHeapMemoryUsage().getUsed() < Consts.threshold) {
+      if ((float) startUsage / (float) memoryMXBean.getHeapMemoryUsage().getUsed() < Consts.THRESHOLD) {
         System.gc();
-        if ((float) startUsage / (float) memoryMXBean.getHeapMemoryUsage().getUsed() >= Consts.threshold) {
+        if ((float) startUsage / (float) memoryMXBean.getHeapMemoryUsage().getUsed() >= Consts.THRESHOLD) {
           return CheckResult.wrong("After returning to the main menu, the amount of memory used by the program is " +
                   "much larger than at the start of the program. Menu is a natural place to call garbage collector to" +
                   " free up memory, used in memorizers");
@@ -110,7 +110,7 @@ public class MemoryTests extends StageTest {
         lastCommand = "/size";
         updateFeedbackOnException(pr, lastCommand, lastMemorizerType);
         if (!output.contains(String.valueOf((i + 1) * 1_500_000))) {
-          return CheckResult.wrong(Consts.MORE_LIKELY_OOM("/size", commands, true));
+          return CheckResult.wrong(Consts.moreLikelyOom("/size", commands, true));
         }
 
         output = pr.execute("/count " + d[3]);
@@ -118,7 +118,7 @@ public class MemoryTests extends StageTest {
         lastCommand = "/count";
         updateFeedbackOnException(pr, lastCommand, lastMemorizerType);
         if (!output.contains(String.valueOf((Integer) d[4] * (i + 1)))) {
-          return CheckResult.wrong(Consts.MORE_LIKELY_OOM("/count", commands, false));
+          return CheckResult.wrong(Consts.moreLikelyOom("/count", commands, false));
         }
       }
       pr.execute("/menu");

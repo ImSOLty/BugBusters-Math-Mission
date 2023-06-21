@@ -2,11 +2,17 @@ import java.util.Arrays;
 import java.util.List;
 
 public class Consts {
-  public static final float threshold = 0.95f;
+  // it's a compile-time public constant
+  public static final float THRESHOLD = 0.95f;
   public static final String MODIFIED = "There is no need to change the initial behaviour of the program:\n";
   public static final String INCORRECT_BEHAVIOUR = "Behaviour is incorrect or not matching the initial one:\n";
 
-  public static String MORE_LIKELY_OOM(String command, List<String> sequence, boolean reveal) {
+  // it's a method (or function if you wish). If you want a constant, you can make a template
+  // or pattern and inject values in your code, e.g.:
+  //     public static String MORE_LIKELY_OOM_TEMPLATE = "...%s...%s...%s..."
+  // usage:
+  //    System.out.println(MORE_LIKELY_OOM_TEMPLATE.formatted(command, sequence, reveal)
+  public static String moreLikelyOom(String command, List<String> sequence, boolean reveal) {
     return "Execution of \"" + command + "\" command finished with incorrect results for a large amount of data." +
             " More likely your program caught an OutOfMemoryError" + (reveal ? " while executing this sequence of " +
             "input: \n" + Arrays.toString(sequence.toArray()) : ".");
